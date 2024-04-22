@@ -1,0 +1,63 @@
+<ng-container *appVar="reviewPage$ | async as reviewPage">
+  <ng-container *ngIf="reviewPage.content.length > 0; else productReviewPageEmpty">
+    <div class="review-top">
+      <app-rating [averageRating]="averageRating" [ratingCount]="ratingCount"></app-rating>
+      <sup class="rating-text">
+        {{averageRating | number: '1.1-2'}} out of 5
+      </sup>
+      <h2>There are {{reviewPage.content.length === 1 ? "1 review" : reviewPage.content.length + " reviews"}}
+        and {{ratingCount === 1 ? ratingCount + " rating" : ratingCount + " ratings"}} </h2>
+      <div *ngIf="reviewPage.content.length > 0">
+        <mat-form-field appearance="outline">
+          <mat-select [(value)]="selectedSort" (valueChange)="sortChange(reviewPage)">
+            <mat-option *ngFor="let sortOption of sortOptions; let i = index" [value]="sortOption">
+              {{sortOptionLabels[i]}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div id="product-review-tab"
+         class="product-review-tab mat-elevation-z1"
+         *ngFor="let review of reviewPage.content; let i = index; trackBy: trackReview">
+      <div class="comment-section">
+        <h1>
+          <mat-icon>account_circle</mat-icon>
+          {{review.firstName}} {{review.lastName}}
+        </h1>
+        <div class="comment-title">
+          <h2>
+            <span class="rating">
+              <app-rating [averageRating]="review.rating" [ratingCount]="1"></app-rating>
+            </span>
+            {{review.title}}
+          </h2>
+        </div>
+        <h3>{{review.reviewDate | date:'mediumDate'}}</h3>
+        <h3 class="comment">{{review.comment}}</h3>
+      </div>
+    </div>
+
+    <app-paginator
+      color="primary"
+      [showPageOption]="false"
+      [showGotoPage]="false"
+      [length]="reviewPage.totalElements"
+      [pageSize]="reviewPage.size"
+      [pageIndex]="reviewPage.number"
+      [pageInfoLabel]="'reviews'"
+      [pageOptionLabel]="'Reviews'"
+      (page)="onPageEvent($event)">
+    </app-paginator>
+  </ng-container>
+  <ng-template #productReviewPageEmpty>
+    <div class="product-review-empty">
+      <app-rating [averageRating]="averageRating" [ratingCount]="ratingCount"></app-rating>
+      <sup class="rating-text">
+        {{averageRating | number: '1.1-2'}} out of 5
+      </sup>
+      <h2>There are 0 reviews and {{ratingCount === 1 ? "1 rating" : ratingCount + " ratings"}} </h2>
+      <h3>No customer reviews.</h3>
+    </div>
+  </ng-template>
+</ng-container>

@@ -1,0 +1,68 @@
+<div class="paginator-container">
+  <div class="paginator-info" *ngIf="showPageOption || showPageInfo || showGotoPage" [style.justify-content]="align">
+    <div *ngIf="showPageOption" class="page-option">
+      <span>{{pageOptionLabel}} per page: </span>
+      <mat-form-field>
+        <mat-select [(value)]="_pageSize" (valueChange)="pageSizeChange()">
+          <mat-option *ngFor="let pageSize of pageSizeOptions" [value]="pageSize">
+            {{pageSize}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div *ngIf="showPageInfo" class="page-info">
+      {{pageIndex * pageSize + (length > 0 ? 1 : 0)}} -
+      {{math.min((pageIndex + 1) * pageSize, length)}} of {{length}} {{pageInfoLabel}}
+    </div>
+    <div *ngIf="showGotoPage" class="goto-page">
+      <span>Page </span>
+      <mat-form-field>
+        <input min="1" [max]="maxPageNumber"
+               type="number" matInput autocomplete="OFF"
+               [formControl]="pageNumber" (change)="goToPage(pageNumber.value - 1)">
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="paginator" *ngIf="showPaginator" [style.justify-content]="align">
+    <button [color]="color" mat-stroked-button class="previous-button"
+            [disabled]="pageIndex === 0"
+            (click)="goToPage(pageIndex - 1)">
+      <mat-icon>arrow_back_ios</mat-icon>
+      <span *ngIf="previousLabel" class="previous-label">{{previousLabel}}</span>
+    </button>
+    <div class="paginator-number">
+      <ng-container *ngIf="color">
+        <ng-container *ngFor="let number of buttonNumbers()">
+          <ng-container *ngIf="pageIndex + 1 === number">
+            <button [color]="color" mat-raised-button class="number-button">
+              {{number}}
+            </button>
+          </ng-container>
+          <ng-container *ngIf="pageIndex + 1 !== number">
+            <button [color]="color" mat-stroked-button (click)="goToPage(number - 1)"
+                    [disabled]="isEllipsisButton(number)"
+                    [ngClass]="'number-button ' + (isHiddenButton(number) ? 'hidden-button' : '')">
+              {{isEllipsisButton(number) ? '...' : number}}
+            </button>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="!color">
+        <button mat-stroked-button *ngFor="let number of buttonNumbers()" (click)="goToPage(number - 1)"
+                [disabled]="isEllipsisButton(number)"
+                [ngClass]="'number-button ' + (pageIndex + 1 === number ? 'active-button ' : '')
+              + (isHiddenButton(number) ? 'hidden-button' : '')">
+          {{isEllipsisButton(number) ? '...' : number}}
+        </button>
+      </ng-container>
+    </div>
+    <button [color]="color" mat-stroked-button class="next-button"
+            [disabled]="pageIndex === maxPageNumber - 1"
+            (click)="goToPage(pageIndex + 1)">
+      <span *ngIf="nextLabel" class="next-label">{{nextLabel}}</span>
+      <mat-icon>arrow_forward_ios</mat-icon>
+    </button>
+  </div>
+</div>
+
+
